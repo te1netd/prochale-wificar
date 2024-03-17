@@ -1,4 +1,4 @@
-﻿############################
+############################
 # ロボットカーをWIFIでコントロールするプログラム
 #  ロボットカー側
 #  WIFI AP化
@@ -79,17 +79,21 @@ for i in range(6):
 #
 access_point = network.WLAN(network.AP_IF)  
 access_point.config(essid=SSID, password=PASSWORD)
-#
-# IP address, netmask, gateway, DNSを固定IPで設定 
-# gateway, DNSは使いません。
-#
-access_point.ifconfig(('192.168.100.1', '255.255.255.0', '192.168.100.1', '192.168.100.1'))
 
 #
 # アクセスポイントとして検知されるようになる
 #
 access_point.active(True)  
+
+#
+# IP address, netmask, gateway, DNSを固定IPで設定 
+# gateway, DNSは使いません。 active(True)の後に設定必要。
+#
+access_point.ifconfig(('192.168.100.1', '255.255.255.0', '192.168.100.1', '192.168.100.1'))
+
 ip = access_point.ifconfig()[0]
+
+    
 
 #
 # 接続が成功した場合、(IPアドレス、ネットマスク、ゲートウェイ、DNS)を表示
@@ -108,7 +112,13 @@ if not 'connection' in globals():
     connection.bind(('0.0.0.0', UDP_PORT))
     print('UDP Bound...')
 
-led.on()
+#
+# デバッグ用　IPアドレスが代っていない場合LEDを消す
+#
+if ip == '192.168.4.1':
+    led.off()
+else:
+    led.on()
 
 while True:
     try:
@@ -181,6 +191,7 @@ while True:
     except OSError as e:
 #       connection.close()
         print('stopped recvfrom()')
+
 
 
 
